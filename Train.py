@@ -12,7 +12,7 @@ from utils import *
 data_folder = './data/'
 crop_size = 96
 scaling_factor = 4
-
+save_path = './result/model.pth'
 batch_size = 64
 start_epoch = 1
 epochs = 50
@@ -54,11 +54,12 @@ def run():
                                                pin_memory=True)
 
     for epoch in range(start_epoch, epochs + 1):
+        print("epoch: %d" % epoch)
         generator.train()
         discriminator.train()
 
         loss_content = AverageMeter()
-        loss_adversarial = AverageMeter()
+        loss_adversarial = AverageMeter() 
         loss_discriminator = AverageMeter()
 
         n_iterators = len(train_loader)
@@ -109,12 +110,12 @@ def run():
                                                                          nrow=4, normalize=True), epoch)
                 writer.add_image('epoch_' + str(epoch) + '_3', make_grid(hr_imgs[:4, :3, :, :].cpu(),
                                                                          nrow=4, normalize=True), epoch)
-
-            print("第 %d / %d 个批次的损失: 内容 %.4f, 对抗 %.4f, 判别器 %.4f" % (i, n_iterators, loss_content.val,
+            """
+            print("The %d / %d iterators loss: content %.4f, Adversarial %.4f, VGG %.4f" % (i, n_iterators, loss_content.val,
                                                                                   loss_adversarial.val,
                                                                                   loss_discriminator.val))
-
-        del lr.imgs, hr_imgs, sr_imgs, sr_imgs_in_vgg_space, hr_imgs_in_vgg_space, content_loss, sr_discriminated, \
+            """
+        del lr_imgs, hr_imgs, sr_imgs, sr_imgs_in_vgg_space, hr_imgs_in_vgg_space, content_loss, sr_discriminated, \
             (adversarial_loss), perceptual_loss, hr_discriminated
 
         writer.add_scalar('Loss/Content', loss_content.val, epoch)
@@ -123,12 +124,12 @@ def run():
 
         torch.save({
             'epoch': epoch,
-            'generator': generator.module.state_dict(),
-            'discriminator': discriminator.module.state_dict(),
+            'generator': generator.state_dict(),
+            'discriminator': discriminator.state_dict(),
             'optimizer_g': optimizerG.state_dict(),
             'optimizer_d': optimizerD.state_dict(),
-        }, 'results/checkpoint_srgan.pth')
-
+        }, save_path)
+    
     writer.close()
 
 
