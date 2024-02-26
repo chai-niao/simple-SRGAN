@@ -48,14 +48,13 @@ class generator(nn.Module):
         self.conv3 =  nn.Sequential(
             nn.Conv2d(64, 256, kernel_size=3, stride=1,padding=1),
             nn.PixelShuffle(2),
-            nn.PReLU()
-        )
-        self.conv4 =  nn.Sequential(
+            nn.PReLU(),
+            
             nn.Conv2d(64, 256, kernel_size=3, stride=1,padding=1),
             nn.PixelShuffle(2),
             nn.PReLU()
         )
-        self.conv5 = nn.Conv2d(64, 3, kernel_size=9, stride=1,padding=4)
+        self.conv4 = nn.Conv2d(64, 3, kernel_size=9, stride=1,padding=4)
         
     def forward(self,x):
         out1 = self.conv1(x)
@@ -63,7 +62,6 @@ class generator(nn.Module):
         out2 = self.conv2(out2)
         out3 = self.conv3(out2 + out1)
         out3 = self.conv4(out3)
-        out3 = self.conv5(out3)
         return out3
     
 class discriminator(nn.Module):
